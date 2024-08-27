@@ -1,8 +1,7 @@
-import React, { useState, useContext } from "react";
-import { AppContext } from "./Root";
+import React, { useState } from "react";
 
 const Home = () => {
-  const { map, setMap } = useContext(AppContext);
+  const [map, setMap] = useState(null);
   const [dimensions, setDimensions] = useState("small");
   const [sea, setSea] = useState(10);
   const [land, setLand] = useState(10);
