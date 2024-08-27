@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { AppContext } from "./Root";
 
 const Home = () => {
+  const { map, setMap } = useContext(AppContext);
   const [dimensions, setDimensions] = useState("small");
   const [sea, setSea] = useState(10);
   const [land, setLand] = useState(10);
   const [grass, setGrass] = useState(10);
-  const [map, setMap] = useState(null);
 
   const generateMap = () => {
-    // Determina le dimensioni della mappa in base alla selezione
     let size;
     switch (dimensions) {
       case "small":
@@ -62,6 +62,15 @@ const Home = () => {
 
     console.table(map);
     setMap(map);
+  };
+
+  const saveMapToLocalStorage = () => {
+    if (map) {
+      localStorage.setItem("generatedMap", JSON.stringify(map));
+      alert("Map saved to localStorage successfully!");
+    } else {
+      alert("Please generate the map first!");
+    }
   };
 
   return (
@@ -142,6 +151,7 @@ const Home = () => {
           </button>
         </div>
       </div>
+
       {map && (
         <div id="gridContainer">
           <table>
@@ -192,6 +202,15 @@ const Home = () => {
           </table>
         </div>
       )}
+
+      <div className="setting">
+        <button
+          className="rounded-lg p-3 bg-purple-400 capitalize"
+          onClick={saveMapToLocalStorage}
+        >
+          save map
+        </button>
+      </div>
     </>
   );
 };
