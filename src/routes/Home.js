@@ -4,7 +4,6 @@ const Home = () => {
   const [map, setMap] = useState(null);
   const [dimensions, setDimensions] = useState("small");
   const [sea, setSea] = useState(10);
-  const [land, setLand] = useState(10);
   const [grass, setGrass] = useState(10);
 
   const generateMap = () => {
@@ -27,19 +26,18 @@ const Home = () => {
     const seaCells = Math.round((sea / 100) * totalCells);
     const grassCells = Math.round((grass / 100) * totalCells);
 
-    // Inizializza la mappa con tutte le celle come "land"
+    // initialize with all land cells
     const map = Array(size)
       .fill()
       .map(() => Array(size).fill("land"));
 
-    // Funzione helper per posizionare zone contigue sulla mappa
+    // helpr function to place contiguously cells
     const placeContiguousArea = (map, size, numCells, terrainType) => {
       let placedCells = 0;
       while (placedCells < numCells) {
         const startX = Math.floor(Math.random() * size);
         const startY = Math.floor(Math.random() * size);
 
-        // Controlla che la cella di partenza sia "land"
         if (map[startX][startY] === "land") {
           const toPlace = Math.min(numCells - placedCells, size - startX);
           for (let i = 0; i < toPlace; i++) {
@@ -53,20 +51,22 @@ const Home = () => {
       }
     };
 
-    // Posiziona le zone di mare
+    // place sea cells
     placeContiguousArea(map, size, seaCells, "sea");
 
-    // Posiziona le zone di erba
+    // place grass cells
     placeContiguousArea(map, size, grassCells, "grass");
 
-    console.table(map);
     setMap(map);
   };
 
   const saveMapToLocalStorage = () => {
     if (map) {
       localStorage.setItem("generatedMap", JSON.stringify(map));
-      alert("Map saved to localStorage successfully!");
+      alert(
+        `Map saved to localStorage successfully!
+        \nNow you can navigate to the Play page`
+      );
     } else {
       alert("Please generate the map first!");
     }
@@ -83,7 +83,6 @@ const Home = () => {
             onChange={(event) => {
               setDimensions(event.target.value);
             }}
-            ß
           >
             <option value="small">Small</option>
             <option value="medium">Medium</option>
@@ -97,29 +96,12 @@ const Home = () => {
             type="number"
             id="sea-input"
             value={sea}
-            min="10" // Imposta il valore minimo a 10
-            max="30" // Imposta il valore massimo a 30
+            min="10"
+            max="30"
             onChange={(event) => {
               const value = parseInt(event.target.value, 10);
               if (value >= 10 && value <= 30) {
                 setSea(value);
-              }
-            }}
-          />
-        </div>
-
-        <div className="setting">
-          <label htmlFor="land-input">Land parameters: </label>
-          <input
-            type="number"
-            id="land-input"
-            value={land}
-            min="10" // Imposta il valore minimo a 10
-            max="30" // Imposta il valore massimo a 30
-            onChange={(event) => {
-              const value = parseInt(event.target.value, 10);
-              if (value >= 10 && value <= 30) {
-                setLand(value);
               }
             }}
           />
@@ -141,6 +123,7 @@ const Home = () => {
             }}
           />
         </div>
+
         <div className="setting">
           <button
             className="rounded-lg p-3 bg-purple-400 capitalize"
@@ -202,7 +185,7 @@ const Home = () => {
         </div>
       )}
 
-      <div className="setting">
+      <div className="pl-4">
         <button
           className="rounded-lg p-3 bg-purple-400 capitalize"
           onClick={saveMapToLocalStorage}
