@@ -22,7 +22,7 @@ function Navbar() {
               isActive ? "active" : isPending ? "pending" : ""
             }
           >
-            Map
+            Play
           </NavLink>
         </li>
       </ul>
