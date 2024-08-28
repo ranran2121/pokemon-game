@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { fetchRandomPokemon } from "../lib/utils";
+import Map from "../components/Map";
 
 const PlayPage = () => {
-  const [localMap, setLocalMap] = useState(null);
-  const [pokemonData, setPokemonData] = useState(null);
-  const [error, setError] = useState("");
-  const [capturedPokemons, setCapturedPokemons] = useState([]);
+  const [localMap, setLocalMap] = useState<string[][] | null>(null);
+  const [pokemonData, setPokemonData] = useState<any | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [capturedPokemons, setCapturedPokemons] = useState<any[]>([]);
   const [pokemonPosition, setPokemonPosition] = useState({ row: 0, col: 0 });
-  const [previousCellValue, setPreviousCellValue] = useState();
+  const [previousCellValue, setPreviousCellValue] = useState("");
 
   const reset = () => {
     localStorage.clear();
@@ -16,7 +17,8 @@ const PlayPage = () => {
     setError(null);
     setCapturedPokemons([]);
     setPokemonData(null);
-    setPokemonPosition(null);
+    setPokemonPosition({ row: 0, col: 0 });
+    setPreviousCellValue("");
   };
 
   useEffect(() => {
@@ -71,14 +73,13 @@ const PlayPage = () => {
         ); // Save pokemon data to localStorage
       } catch (err) {
         setError("Failed to fetch Pokémon");
-        localStorage.setItem("generatedPokemon", null);
       }
     }
   };
 
   useEffect(() => {
     // Handle keyboard input for Pokémon movement
-    const handleKeyDown = async (event) => {
+    const handleKeyDown = async (event: any) => {
       if (!localMap || !pokemonData) return;
 
       const { row, col } = pokemonPosition;
@@ -121,7 +122,7 @@ const PlayPage = () => {
             const pokemonResponse = await fetchRandomPokemon();
 
             // Add the captured Pokémon to the list
-            setCapturedPokemons((prev) => [
+            setCapturedPokemons((prev: any[]) => [
               ...prev,
               {
                 name: pokemonResponse.data.name,
@@ -175,51 +176,7 @@ const PlayPage = () => {
                 </button>
               )}
             </div>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: `repeat(${localMap[0].length}, 30px)`,
-              }}
-            >
-              {localMap.flat().map((cell, index) => {
-                const isPokemon = cell.startsWith("pokemon-");
-                const pokemonName = isPokemon ? cell.split("-")[1] : null;
-
-                return (
-                  <div
-                    key={index}
-                    style={{
-                      width: "30px",
-                      height: "30px",
-                      backgroundColor: isPokemon
-                        ? "red" // Color for Pokémon
-                        : cell === "sea"
-                        ? "blue"
-                        : cell === "grass"
-                        ? "green"
-                        : "yellow",
-                      border: "1px solid #ccc",
-                      position: "relative",
-                    }}
-                  >
-                    {isPokemon && pokemonName && pokemonData?.sprites && (
-                      <img
-                        src={pokemonData.sprites.front_default} // Use the correct image URL
-                        alt={pokemonName}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          position: "absolute",
-                          top: 0,
-                          left: 0,
-                        }}
-                      />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+            <Map pokemonData={pokemonData} localMap={localMap} size="30px" />
           </div>
         ) : (
           <p>

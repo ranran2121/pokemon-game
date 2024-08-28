@@ -1,13 +1,14 @@
 import React, { useState } from "react";
+import Map from "../components/Map";
 
 const Home = () => {
-  const [map, setMap] = useState(null);
+  const [map, setMap] = useState<string[][] | null>(null);
   const [dimensions, setDimensions] = useState("small");
   const [sea, setSea] = useState(10);
   const [grass, setGrass] = useState(10);
 
   const generateMap = () => {
-    let size;
+    let size: number;
     switch (dimensions) {
       case "small":
         size = 10;
@@ -28,11 +29,16 @@ const Home = () => {
 
     // initialize with all land cells
     const map = Array(size)
-      .fill()
+      .fill("")
       .map(() => Array(size).fill("land"));
 
-    // helpr function to place contiguously cells
-    const placeContiguousArea = (map, size, numCells, terrainType) => {
+    // helper function to place contiguously cells
+    const placeContiguousArea = (
+      map: string[][],
+      size: number,
+      numCells: number,
+      terrainType: string
+    ) => {
       let placedCells = 0;
       while (placedCells < numCells) {
         const startX = Math.floor(Math.random() * size);
@@ -134,56 +140,7 @@ const Home = () => {
         </div>
       </div>
 
-      {map && (
-        <div id="gridContainer">
-          <table>
-            <tbody>
-              {map.map((row, i) => {
-                return (
-                  <tr key={i}>
-                    {row.map((_, j) => {
-                      if (map[i][j] === "land") {
-                        return (
-                          <td
-                            key={j}
-                            className="w-4 h-4"
-                            style={{ backgroundColor: "yellow" }}
-                          ></td>
-                        );
-                      }
-                      if (map[i][j] === "sea") {
-                        return (
-                          <td
-                            key={j}
-                            className="w-4 h-4"
-                            style={{ backgroundColor: "blue" }}
-                          ></td>
-                        );
-                      }
-                      if (map[i][j] === "grass") {
-                        return (
-                          <td
-                            key={j}
-                            className="w-4 h-4"
-                            style={{ backgroundColor: "green" }}
-                          ></td>
-                        );
-                      }
-                      return (
-                        <td
-                          key={j}
-                          className="w-4 h-4"
-                          style={{ backgroundColor: "red" }}
-                        ></td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+      {map && <Map localMap={map} />}
 
       <div className="pl-4">
         <button
