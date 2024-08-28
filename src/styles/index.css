@@ -10,18 +10,6 @@
   @apply py-2;
 }
 
-#gridContainer {
-  @apply pb-4 flex justify-center;
-}
-
-table {
-  background-color: #cdc5d6;
-  border-spacing: 0;
-}
-
-td {
-  border: 1px solid #e8daf5;
-  border-radius: 3px;
-  width: 10px;
-  height: 10px;
+.input {
+  @apply border-2 rounded-lg border-purple-400 px-2;
 }

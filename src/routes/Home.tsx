@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Map from "../components/Map";
 
 const Home = () => {
@@ -6,6 +6,27 @@ const Home = () => {
   const [dimensions, setDimensions] = useState("small");
   const [sea, setSea] = useState(10);
   const [grass, setGrass] = useState(10);
+  const [hasStoredMap, setHasStoredMap] = useState(false);
+
+  useEffect(() => {
+    const storedMap = localStorage.getItem("generatedMap");
+    if (storedMap) {
+      setHasStoredMap(true);
+    } else {
+      setHasStoredMap(false);
+    }
+
+    const handleStorageChange = () => {
+      const storedMap = localStorage.getItem("generatedMap");
+      setHasStoredMap(storedMap !== null);
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
 
   const generateMap = () => {
     let size: number;
@@ -68,22 +89,28 @@ const Home = () => {
 
   const saveMapToLocalStorage = () => {
     if (map) {
+      //reset local storage from previous game
+      localStorage.clear();
+      setHasStoredMap(false);
+
       localStorage.setItem("generatedMap", JSON.stringify(map));
       alert(
         `Map saved to localStorage successfully!
         \nNow you can navigate to the Play page`
       );
+      setHasStoredMap(true);
     } else {
       alert("Please generate the map first!");
     }
   };
 
   return (
-    <>
-      <div className="pl-4">
+    <div className="pl-4">
+      <div>
         <div className="setting">
-          <label htmlFor="dimension-select">Select map's size:</label>
+          <label htmlFor="dimension-select">Select map's size: </label>
           <select
+            className="input"
             id="dimension-select"
             value={dimensions}
             onChange={(event) => {
@@ -99,6 +126,7 @@ const Home = () => {
         <div className="setting">
           <label htmlFor="sea-input">Sea parameters: </label>
           <input
+            className="input"
             type="number"
             id="sea-input"
             value={sea}
@@ -116,6 +144,7 @@ const Home = () => {
         <div className="setting">
           <label htmlFor="grass-input">Grass parameters: </label>
           <input
+            className="input"
             type="number"
             id="grass-input"
             value={grass}
@@ -140,17 +169,29 @@ const Home = () => {
         </div>
       </div>
 
-      {map && <Map localMap={map} />}
+      {map && (
+        <div className="flex gap-4">
+          <p className="text-pink-400 uppercase">Map preview:</p>
+          <Map localMap={map} />
+        </div>
+      )}
 
-      <div className="pl-4">
+      <div className="my-3">
         <button
           className="rounded-lg p-3 bg-purple-400 capitalize"
           onClick={saveMapToLocalStorage}
         >
           save map
         </button>
+
+        {hasStoredMap && (
+          <div className="my-3 px-3 bg-pink-300 text-white w-fit">
+            A map is already stored. Saving a new map will reset the previous
+            game
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 
