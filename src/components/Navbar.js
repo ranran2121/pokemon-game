@@ -8,9 +8,7 @@ function Navbar() {
         <li>
           <NavLink
             to={"/"}
-            className={({ isActive, isPending }) =>
-              isActive ? "active" : isPending ? "pending" : ""
-            }
+            className={({ isActive }) => (isActive ? "active" : "")}
           >
             Home
           </NavLink>
@@ -18,9 +16,7 @@ function Navbar() {
         <li>
           <NavLink
             to={"/play"}
-            className={({ isActive, isPending }) =>
-              isActive ? "active" : isPending ? "pending" : ""
-            }
+            className={({ isActive }) => (isActive ? "active" : "")}
           >
             Play
           </NavLink>
