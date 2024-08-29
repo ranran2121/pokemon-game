@@ -11,7 +11,6 @@ const Map = ({
   pokemonPosition?: { row: number; col: number } | null;
   size?: string;
 }) => {
-  console.log("Position", pokemonPosition);
   return (
     <div
       style={{

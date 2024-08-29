@@ -43,6 +43,18 @@ const PlayPage = () => {
       const parsedMap = JSON.parse(storedMap);
       setLocalMap(parsedMap);
     }
+
+    const storedCapturedPokemons = localStorage.getItem("capturedPokemons");
+    if (storedCapturedPokemons) {
+      const parsedCapturedPokemons = JSON.parse(storedCapturedPokemons);
+      setCapturedPokemons(parsedCapturedPokemons);
+    }
+
+    const storedLog = localStorage.getItem("log");
+    if (storedLog) {
+      const parsedLog = JSON.parse(storedLog);
+      setLog(parsedLog);
+    }
   }, []);
 
   const fetchPokemon = async () => {
@@ -129,6 +141,16 @@ const PlayPage = () => {
               const pokemonResponse = await fetchRandomPokemon();
 
               // Add the captured Pokémon to the list
+              localStorage.setItem(
+                "capturedPokemons",
+                JSON.stringify([
+                  ...capturedPokemons,
+                  {
+                    name: pokemonResponse.data.name,
+                    sprite: pokemonResponse.data.sprites.front_default,
+                  },
+                ])
+              );
               setCapturedPokemons((prev: any[]) => [
                 ...prev,
                 {
@@ -144,13 +166,18 @@ const PlayPage = () => {
             }
           }
         }
+
+        localStorage.setItem(
+          "log",
+          JSON.stringify([...log, `You moved ${move}`])
+        );
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
 
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [pokemonPosition, pokemonData, localMap]);
+  }, [pokemonPosition, pokemonData, localMap, log, capturedPokemons]);
 
   return (
     <div className="flex flex-col justify-center items-center mt-2">
