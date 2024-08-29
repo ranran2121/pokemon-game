@@ -88,6 +88,12 @@ const PlayPage = () => {
   useEffect(() => {
     // Handle keyboard input for Pokémon movement
     const handleKeyDown = async (event: any) => {
+      if (
+        ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)
+      ) {
+        event.preventDefault();
+      }
+
       if (!localMap || !pokemonData) return;
 
       if (pokemonPosition) {
@@ -161,7 +167,7 @@ const PlayPage = () => {
 
               setLog((prev: string[]) => [
                 ...prev,
-                `You caught ${pokemonResponse.data.name}`,
+                `You caught ${pokemonResponse.data.name.toUpperCase()}`,
               ]);
             }
           }
@@ -200,7 +206,9 @@ const PlayPage = () => {
                 {pokemonData?.name ? (
                   <h2>
                     Play with{" "}
-                    <span className="capitalize">{pokemonData.name}</span>
+                    <span className="uppercase text-pink-400 font-bold ">
+                      {pokemonData.name}
+                    </span>
                   </h2>
                 ) : (
                   <button
@@ -220,14 +228,14 @@ const PlayPage = () => {
             </div>
 
             <div className="mt-3 flex justify-between w-screen h-1/2">
-              <div className="overflow-y-auto basis-1/2 pl-2">
+              <div className="basis-1/2 pl-2">
                 <List
                   list={capturedPokemons}
                   title={"Captured Pokémon"}
                   isLog={false}
                 />
               </div>
-              <div className="overflow-y-auto border-purple-400 border-double border-l-4 basis-1/2 pl-2">
+              <div className="border-purple-400 border-double border-l-4 basis-1/2 pl-2">
                 <List list={log} title={"Log"} isLog={true} />
               </div>
             </div>
