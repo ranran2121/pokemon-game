@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { fetchRandomPokemon } from "../lib/utils";
 import Map from "../components/Map";
+import List from "../components/List";
 
 const PlayPage = () => {
   const [localMap, setLocalMap] = useState<string[][] | null>(null);
   const [pokemonData, setPokemonData] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [capturedPokemons, setCapturedPokemons] = useState<any[]>([]);
+  const [log, setLog] = useState<string[]>([]);
   const [pokemonPosition, setPokemonPosition] = useState({ row: 0, col: 0 });
   const [previousCellValue, setPreviousCellValue] = useState("");
 
@@ -19,6 +21,7 @@ const PlayPage = () => {
     setPokemonData(null);
     setPokemonPosition({ row: 0, col: 0 });
     setPreviousCellValue("");
+    setLog([]);
   };
 
   useEffect(() => {
@@ -86,26 +89,33 @@ const PlayPage = () => {
 
       let newRow = row;
       let newCol = col;
+      let move = "";
 
       switch (event.key) {
         case "ArrowUp":
           newRow = Math.max(0, row - 1);
+          move = "up";
           break;
         case "ArrowDown":
           newRow = Math.min(localMap.length - 1, row + 1);
+          move = "down";
           break;
         case "ArrowLeft":
           newCol = Math.max(0, col - 1);
+          move = "left";
           break;
         case "ArrowRight":
           newCol = Math.min(localMap[0].length - 1, col + 1);
+          move = "right";
           break;
         default:
           return;
       }
 
       // Check if the new position is a valid move
-      if (localMap[newRow][newCol] !== "sea") {
+      if (localMap[newRow][newCol] === "sea") {
+        setLog((prev: string[]) => [...prev, "Invalid move"]);
+      } else {
         const updatedMap = localMap.map((row) => [...row]);
 
         //restore previous position
@@ -114,6 +124,7 @@ const PlayPage = () => {
         updatedMap[newRow][newCol] = `pokemon-${pokemonData.name}`;
 
         setPokemonPosition({ row: newRow, col: newCol });
+        setLog((prev: string[]) => [...prev, `You moved ${move}`]);
 
         // Check if the new position is grass
         if (localMap[newRow][newCol] === "grass") {
@@ -130,7 +141,10 @@ const PlayPage = () => {
               },
             ]);
 
-            console.log("POKEMON CAPTURED: " + pokemonResponse.data.name);
+            setLog((prev: string[]) => [
+              ...prev,
+              `You caught ${pokemonResponse.data.name}`,
+            ]);
           }
         }
 
@@ -149,35 +163,51 @@ const PlayPage = () => {
   return (
     <div className="flex flex-col justify-center items-center mt-2">
       {error && <div className="">{error}</div>}
-      {localMap && pokemonData && (
-        <button
-          onClick={reset}
-          className="bg-pink-400 p-4 rounded-xl uppercase text-white"
-        >
-          clear
-        </button>
-      )}
 
-      <div className="">
+      <div className="h-screen overflow-hidden">
         {localMap ? (
-          <div className="flex flex-col items-center">
-            <div className="my-2">
-              {pokemonData?.name ? (
-                <h2>
-                  Play with{" "}
-                  <span className="capitalize">{pokemonData.name}</span>
-                </h2>
-              ) : (
+          <>
+            <div className="flex flex-col items-center">
+              {pokemonData && (
                 <button
-                  onClick={fetchPokemon}
+                  onClick={reset}
                   className="bg-pink-400 p-4 rounded-xl uppercase text-white"
                 >
-                  Play
+                  clear
                 </button>
               )}
+
+              <div className="my-2">
+                {pokemonData?.name ? (
+                  <h2>
+                    Play with{" "}
+                    <span className="capitalize">{pokemonData.name}</span>
+                  </h2>
+                ) : (
+                  <button
+                    onClick={fetchPokemon}
+                    className="bg-pink-400 p-4 rounded-xl uppercase text-white"
+                  >
+                    Play
+                  </button>
+                )}
+              </div>
+              <Map pokemonData={pokemonData} localMap={localMap} size="30px" />
             </div>
-            <Map pokemonData={pokemonData} localMap={localMap} size="30px" />
-          </div>
+
+            <div className="mt-3 flex justify-between w-screen h-1/2">
+              <div className="overflow-y-auto basis-1/2 pl-2">
+                <List
+                  list={capturedPokemons}
+                  title={"Captured Pokémon"}
+                  isLog={false}
+                />
+              </div>
+              <div className="overflow-y-auto border-purple-400 border-double border-l-4 basis-1/2 pl-2">
+                <List list={log} title={"Log"} isLog={true} />
+              </div>
+            </div>
+          </>
         ) : (
           <p>
             No map available. Please generate and save a map first in the{" "}
@@ -186,21 +216,6 @@ const PlayPage = () => {
             </NavLink>
           </p>
         )}
-      </div>
-      <div className="captured-pokemons">
-        <h3>Captured Pokémon</h3>
-        <ul>
-          {capturedPokemons.map((pokemon, index) => (
-            <li key={index}>
-              <img
-                src={pokemon.sprite}
-                alt={pokemon.name}
-                style={{ width: "50px", height: "50px" }}
-              />
-              {pokemon.name}
-            </li>
-          ))}
-        </ul>
       </div>
     </div>
   );
