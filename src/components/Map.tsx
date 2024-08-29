@@ -3,12 +3,15 @@ import React from "react";
 const Map = ({
   localMap,
   pokemonData = null,
+  pokemonPosition,
   size = "10px",
 }: {
   localMap: string[][];
   pokemonData?: any;
+  pokemonPosition?: { row: number; col: number } | null;
   size?: string;
 }) => {
+  console.log("Position", pokemonPosition);
   return (
     <div
       style={{
@@ -17,8 +20,22 @@ const Map = ({
       }}
     >
       {localMap.flat().map((cell, index) => {
-        const isPokemon = cell.startsWith("pokemon-");
-        const pokemonName = isPokemon ? cell.split("-")[1] : null;
+        let isPokemon = false;
+
+        //check if the cell is equal to the Pokemon's current position
+        if (
+          pokemonPosition &&
+          pokemonPosition?.row >= 0 &&
+          pokemonPosition?.col >= 0
+        ) {
+          const rowPositionInFlat = Math.floor(index / localMap[0].length);
+          const colPositionInFlat = index % localMap[0].length;
+
+          isPokemon =
+            pokemonData.name &&
+            pokemonPosition.row === rowPositionInFlat &&
+            pokemonPosition.col === colPositionInFlat;
+        }
 
         return (
           <div
@@ -37,10 +54,10 @@ const Map = ({
               position: "relative",
             }}
           >
-            {isPokemon && pokemonName && pokemonData?.sprites && (
+            {isPokemon && pokemonData?.name && pokemonData?.sprites && (
               <img
                 src={pokemonData.sprites.front_default}
-                alt={pokemonName}
+                alt={pokemonData?.name}
                 style={{
                   width: "100%",
                   height: "100%",

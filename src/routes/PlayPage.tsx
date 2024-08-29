@@ -10,8 +10,10 @@ const PlayPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [capturedPokemons, setCapturedPokemons] = useState<any[]>([]);
   const [log, setLog] = useState<string[]>([]);
-  const [pokemonPosition, setPokemonPosition] = useState({ row: 0, col: 0 });
-  const [previousCellValue, setPreviousCellValue] = useState("");
+  const [pokemonPosition, setPokemonPosition] = useState<{
+    row: number;
+    col: number;
+  } | null>(null);
 
   const reset = () => {
     localStorage.clear();
@@ -19,28 +21,29 @@ const PlayPage = () => {
     setError(null);
     setCapturedPokemons([]);
     setPokemonData(null);
-    setPokemonPosition({ row: 0, col: 0 });
-    setPreviousCellValue("");
+    setPokemonPosition(null);
     setLog([]);
   };
 
   useEffect(() => {
-    if (!pokemonData) {
-      const storedPokemon = localStorage.getItem("generatedPokemon");
-      if (storedPokemon) {
-        const parsedPokemonData = JSON.parse(storedPokemon);
-        setPokemonData(parsedPokemonData);
-      }
+    const storedPokemon = localStorage.getItem("generatedPokemon");
+    if (storedPokemon) {
+      const parsedPokemonData = JSON.parse(storedPokemon);
+      setPokemonData(parsedPokemonData);
     }
-  });
 
-  useEffect(() => {
+    const storedPokemonPosition = localStorage.getItem("pokemonPosition");
+    if (storedPokemonPosition) {
+      const { row, col } = JSON.parse(storedPokemonPosition);
+      setPokemonPosition({ row, col });
+    }
+
     const storedMap = localStorage.getItem("generatedMap");
     if (storedMap) {
       const parsedMap = JSON.parse(storedMap);
       setLocalMap(parsedMap);
     }
-  }, [pokemonPosition]);
+  }, []);
 
   const fetchPokemon = async () => {
     if (localMap) {
@@ -52,28 +55,18 @@ const PlayPage = () => {
         // Set Pokémon position to the center of the map
         const centerRow = Math.floor(localMap.length / 2);
         const centerCol = Math.floor(localMap[0].length / 2);
-        //store cell value
-        const value = localMap[centerRow][centerCol];
-        setPreviousCellValue(value);
 
         setPokemonPosition({ row: centerRow, col: centerCol });
-
-        // Update map with Pokémon in the middle cell
-        const updatedMap = localMap.map((row, rowIndex) =>
-          row.map((cell, colIndex) => {
-            return rowIndex === centerRow && colIndex === centerCol
-              ? `pokemon-${pokemonResponse.data.name}`
-              : cell;
-          })
+        localStorage.setItem(
+          "pokemonPosition",
+          JSON.stringify({ row: centerRow, col: centerCol })
         );
-        setLocalMap(updatedMap);
-        localStorage.setItem("generatedMap", JSON.stringify(updatedMap));
-        setPokemonData(pokemonResponse.data);
 
+        setPokemonData(pokemonResponse.data);
         localStorage.setItem(
           "generatedPokemon",
           JSON.stringify(pokemonResponse.data)
-        ); // Save pokemon data to localStorage
+        );
       } catch (err) {
         setError("Failed to fetch Pokémon");
       }
@@ -85,80 +78,79 @@ const PlayPage = () => {
     const handleKeyDown = async (event: any) => {
       if (!localMap || !pokemonData) return;
 
-      const { row, col } = pokemonPosition;
+      if (pokemonPosition) {
+        const { row, col } = pokemonPosition;
 
-      let newRow = row;
-      let newCol = col;
-      let move = "";
+        let newRow = row;
+        let newCol = col;
+        let move = "";
 
-      switch (event.key) {
-        case "ArrowUp":
-          newRow = Math.max(0, row - 1);
-          move = "up";
-          break;
-        case "ArrowDown":
-          newRow = Math.min(localMap.length - 1, row + 1);
-          move = "down";
-          break;
-        case "ArrowLeft":
-          newCol = Math.max(0, col - 1);
-          move = "left";
-          break;
-        case "ArrowRight":
-          newCol = Math.min(localMap[0].length - 1, col + 1);
-          move = "right";
-          break;
-        default:
-          return;
-      }
-
-      // Check if the new position is a valid move
-      if (localMap[newRow][newCol] === "sea") {
-        setLog((prev: string[]) => [...prev, "Invalid move"]);
-      } else {
-        const updatedMap = localMap.map((row) => [...row]);
-
-        //restore previous position
-        updatedMap[row][col] = previousCellValue;
-        setPreviousCellValue(updatedMap[newRow][newCol]);
-        updatedMap[newRow][newCol] = `pokemon-${pokemonData.name}`;
-
-        setPokemonPosition({ row: newRow, col: newCol });
-        setLog((prev: string[]) => [...prev, `You moved ${move}`]);
-
-        // Check if the new position is grass
-        if (localMap[newRow][newCol] === "grass") {
-          // 20% chance to find a Pokémon
-          if (Math.random() < 0.2) {
-            const pokemonResponse = await fetchRandomPokemon();
-
-            // Add the captured Pokémon to the list
-            setCapturedPokemons((prev: any[]) => [
-              ...prev,
-              {
-                name: pokemonResponse.data.name,
-                sprite: pokemonResponse.data.sprites.front_default,
-              },
-            ]);
-
-            setLog((prev: string[]) => [
-              ...prev,
-              `You caught ${pokemonResponse.data.name}`,
-            ]);
-          }
+        switch (event.key) {
+          case "ArrowUp":
+            newRow = Math.max(0, row - 1);
+            move = "up";
+            break;
+          case "ArrowDown":
+            newRow = Math.min(localMap.length - 1, row + 1);
+            move = "down";
+            break;
+          case "ArrowLeft":
+            newCol = Math.max(0, col - 1);
+            move = "left";
+            break;
+          case "ArrowRight":
+            newCol = Math.min(localMap[0].length - 1, col + 1);
+            move = "right";
+            break;
+          default:
+            return;
         }
 
-        // Update the map state
-        setLocalMap([...updatedMap]);
+        // Check if the new position is a valid move
+        if (localMap[newRow][newCol] === "sea") {
+          setLog((prev: string[]) => [...prev, "Invalid move"]);
+        } else {
+          //set new Pokemon's position
+          setPokemonPosition({ row: newRow, col: newCol });
+          localStorage.setItem(
+            "pokemonPosition",
+            JSON.stringify({
+              row: newRow,
+              col: newCol,
+            })
+          );
 
-        localStorage.setItem("generatedMap", JSON.stringify(updatedMap));
+          setLog((prev: string[]) => [...prev, `You moved ${move}`]);
+
+          // Check if the new position is grass
+          if (localMap[newRow][newCol] === "grass") {
+            // 20% chance to find a Pokémon
+            if (Math.random() < 0.2) {
+              const pokemonResponse = await fetchRandomPokemon();
+
+              // Add the captured Pokémon to the list
+              setCapturedPokemons((prev: any[]) => [
+                ...prev,
+                {
+                  name: pokemonResponse.data.name,
+                  sprite: pokemonResponse.data.sprites.front_default,
+                },
+              ]);
+
+              setLog((prev: string[]) => [
+                ...prev,
+                `You caught ${pokemonResponse.data.name}`,
+              ]);
+            }
+          }
+        }
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
 
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [pokemonPosition, localMap, pokemonData]);
+  }, [pokemonPosition, pokemonData, localMap]);
 
   return (
     <div className="flex flex-col justify-center items-center mt-2">
@@ -192,7 +184,12 @@ const PlayPage = () => {
                   </button>
                 )}
               </div>
-              <Map pokemonData={pokemonData} localMap={localMap} size="30px" />
+              <Map
+                pokemonData={pokemonData}
+                localMap={localMap}
+                pokemonPosition={pokemonPosition}
+                size="30px"
+              />
             </div>
 
             <div className="mt-3 flex justify-between w-screen h-1/2">
