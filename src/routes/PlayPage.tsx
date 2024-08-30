@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { fetchRandomPokemon } from "../lib/utils";
 import Map from "../components/Map";
@@ -14,6 +14,7 @@ const PlayPage = () => {
     row: number;
     col: number;
   } | null>(null);
+  const fileInputRef = useRef<any>(null);
 
   const reset = () => {
     localStorage.clear();
@@ -23,6 +24,85 @@ const PlayPage = () => {
     setPokemonData(null);
     setPokemonPosition(null);
     setLog([]);
+  };
+
+  const save = () => {
+    // Collect data from localStorage
+    const gameData = {
+      pokemonData: JSON.parse(
+        localStorage.getItem("generatedPokemon") || "null"
+      ),
+      mapData: JSON.parse(localStorage.getItem("generatedMap") || "null"),
+      capturedPokemons: JSON.parse(
+        localStorage.getItem("capturedPokemons") || "[]"
+      ),
+      log: JSON.parse(localStorage.getItem("log") || "[]"),
+      pokemonPosition: JSON.parse(
+        localStorage.getItem("pokemonPosition") || "null"
+      ),
+    };
+
+    // Convert the data to a JSON string
+    const jsonData = JSON.stringify(gameData, null, 2);
+
+    // Create a Blob object from the JSON string
+    const blob = new Blob([jsonData], { type: "application/json" });
+
+    // Create a download link and click it programmatically
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "game-data.json";
+    link.click();
+
+    // Clean up the URL object
+    URL.revokeObjectURL(link.href);
+  };
+
+  const load = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const gameData = JSON.parse(e.target?.result as string);
+
+          // Update localStorage with loaded data
+          localStorage.setItem(
+            "generatedPokemon",
+            JSON.stringify(gameData.pokemonData)
+          );
+          localStorage.setItem(
+            "generatedMap",
+            JSON.stringify(gameData.mapData)
+          );
+          localStorage.setItem(
+            "pokemonPosition",
+            JSON.stringify(gameData.pokemonPosition)
+          );
+          localStorage.setItem(
+            "capturedPokemons",
+            JSON.stringify(gameData.capturedPokemons)
+          );
+          localStorage.setItem("log", JSON.stringify(gameData.log));
+
+          // Update state with loaded data
+          setPokemonData(gameData.pokemonData);
+          setLocalMap(gameData.localMap);
+          setPokemonPosition(gameData.pokemonPosition);
+          setCapturedPokemons(gameData.capturedPokemons);
+          setLog(gameData.log);
+        } catch (error) {
+          console.error("Error loading game data:", error);
+          setError(
+            "Failed to load game data. Please try again with a valid JSON file."
+          );
+        }
+      };
+      reader.readAsText(file);
+
+      //this forces
+      window.location.reload();
+    }
   };
 
   useEffect(() => {
@@ -194,12 +274,20 @@ const PlayPage = () => {
           <>
             <div className="flex flex-col items-center">
               {pokemonData && (
-                <button
-                  onClick={reset}
-                  className="bg-pink-400 p-4 rounded-xl uppercase text-white"
-                >
-                  clear
-                </button>
+                <div className="flex justify-around gap-6">
+                  <button
+                    onClick={reset}
+                    className="bg-pink-400 p-4 rounded-xl uppercase text-white"
+                  >
+                    clear
+                  </button>
+                  <button
+                    onClick={save}
+                    className="bg-pink-400 p-4 rounded-xl uppercase text-white"
+                  >
+                    save
+                  </button>
+                </div>
               )}
 
               <div className="my-2">
@@ -241,12 +329,30 @@ const PlayPage = () => {
             </div>
           </>
         ) : (
-          <p>
-            No map available. Please generate and save a map first in the{" "}
-            <NavLink to="/" className="capitalize text-purple-400">
-              home page
-            </NavLink>
-          </p>
+          <div>
+            <p>
+              No map available. Please generate and save a map first in the{" "}
+              <NavLink to="/" className="capitalize text-purple-400">
+                home page
+              </NavLink>
+            </p>
+            <div className="flex items-center gap-2 mt-2">
+              <p>Or, load the data game from a Json file</p>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="bg-pink-400 p-4 rounded-xl uppercase text-white"
+              >
+                load
+              </button>
+              <input
+                type="file"
+                accept="application/json"
+                ref={fileInputRef}
+                onChange={load}
+                style={{ display: "none" }}
+              />
+            </div>
+          </div>
         )}
       </div>
     </div>
