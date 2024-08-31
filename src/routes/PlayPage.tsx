@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { fetchRandomPokemon } from "../lib/utils";
+import { fetchRandomPokemon } from "../lib/fetchRandomPokemon";
 import Map from "../components/Map";
 import List from "../components/List";
 

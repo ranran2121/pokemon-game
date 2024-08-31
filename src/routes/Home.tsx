@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Map from "../components/Map";
+import {
+  placeContiguousArea,
+  recheckMapForIsolatedLandCells,
+} from "../lib/mapGeneration";
 
 const Home = () => {
   const [map, setMap] = useState<string[][] | null>(null);
@@ -29,60 +33,53 @@ const Home = () => {
   }, []);
 
   const generateMap = () => {
-    let size: number;
+    let width: number, height: number;
     switch (dimensions) {
       case "small":
-        size = 10;
+        width = 10;
+        height = 10;
         break;
       case "medium":
-        size = 20;
+        width = 25;
+        height = 20;
         break;
       case "large":
-        size = 30;
+        width = 40;
+        height = 25;
         break;
       default:
-        size = 10;
+        width = 10;
+        height = 10;
     }
 
-    const totalCells = size * size;
+    const totalCells = width * height;
     const seaCells = Math.round((sea / 100) * totalCells);
     const grassCells = Math.round((grass / 100) * totalCells);
 
     // initialize with all land cells
-    const map = Array(size)
+    const map = Array(height)
       .fill("")
-      .map(() => Array(size).fill("land"));
-
-    // helper function to place contiguously cells
-    const placeContiguousArea = (
-      map: string[][],
-      size: number,
-      numCells: number,
-      terrainType: string
-    ) => {
-      let placedCells = 0;
-      while (placedCells < numCells) {
-        const startX = Math.floor(Math.random() * size);
-        const startY = Math.floor(Math.random() * size);
-
-        if (map[startX][startY] === "land") {
-          const toPlace = Math.min(numCells - placedCells, size - startX);
-          for (let i = 0; i < toPlace; i++) {
-            if (map[startX + i][startY] === "land") {
-              map[startX + i][startY] = terrainType;
-              placedCells++;
-              if (placedCells === numCells) break;
-            }
-          }
-        }
-      }
-    };
+      .map(() => Array(width).fill("land"));
 
     // place sea cells
-    placeContiguousArea(map, size, seaCells, "sea");
+    placeContiguousArea({
+      map,
+      width,
+      height,
+      numCells: seaCells,
+      terrainType: "sea",
+    });
 
-    // place grass cells
-    placeContiguousArea(map, size, grassCells, "grass");
+    // Place grass cells
+    placeContiguousArea({
+      map,
+      width,
+      height,
+      numCells: grassCells,
+      terrainType: "grass",
+    });
+
+    recheckMapForIsolatedLandCells({ width, height, map });
 
     setMap(map);
   };
