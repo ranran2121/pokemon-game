@@ -102,8 +102,8 @@ const Home = () => {
   };
 
   return (
-    <div className="pl-4">
-      <div>
+    <div className="text-center">
+      <div className="my-5">
         <div className="setting">
           <label htmlFor="dimension-select">Select map's size: </label>
           <select
@@ -157,32 +157,26 @@ const Home = () => {
         </div>
 
         <div className="setting">
-          <button
-            className="rounded-lg p-3 bg-purple-400 capitalize"
-            onClick={generateMap}
-          >
+          <button className="button" onClick={generateMap}>
             generate map
           </button>
         </div>
       </div>
 
       {map && (
-        <div className="flex gap-4">
-          <p className="text-pink-400 uppercase">Map preview:</p>
+        <div className="flex gap-4 justify-center">
+          <p className="text-orange-500 uppercase">Map preview:</p>
           <Map localMap={map} />
         </div>
       )}
 
-      <div className="my-3">
-        <button
-          className="rounded-lg p-3 bg-purple-400 capitalize"
-          onClick={saveMapToLocalStorage}
-        >
+      <div className="my-5 text-center">
+        <button className="button" onClick={saveMapToLocalStorage}>
           save map
         </button>
 
         {hasStoredMap && (
-          <div className="my-3 px-3 bg-pink-300 text-white w-fit">
+          <div className="my-4 px-3 bg-amber-300 text-orange-500">
             A map is already stored. Saving a new map will reset the previous
             game
           </div>

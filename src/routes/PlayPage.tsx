@@ -275,16 +275,10 @@ const PlayPage = () => {
             <div className="flex flex-col items-center">
               {pokemonData && (
                 <div className="flex justify-around gap-6">
-                  <button
-                    onClick={reset}
-                    className="bg-pink-400 p-4 rounded-xl uppercase text-white"
-                  >
+                  <button onClick={reset} className="button">
                     clear
                   </button>
-                  <button
-                    onClick={save}
-                    className="bg-pink-400 p-4 rounded-xl uppercase text-white"
-                  >
+                  <button onClick={save} className="button">
                     save
                   </button>
                 </div>
@@ -294,7 +288,7 @@ const PlayPage = () => {
                 {pokemonData?.name ? (
                   <h2>
                     Play with{" "}
-                    <span className="uppercase text-pink-400 font-bold ">
+                    <span className="uppercase text-orange-500 font-bold ">
                       {pokemonData.name}
                     </span>
                   </h2>
@@ -323,7 +317,8 @@ const PlayPage = () => {
                   isLog={false}
                 />
               </div>
-              <div className="border-purple-400 border-double border-l-4 basis-1/2 pl-2">
+              <div className="border-double border-l-4 border-orange-500 ml-2"></div>
+              <div className="basis-1/2 pl-2">
                 <List list={log} title={"Log"} isLog={true} />
               </div>
             </div>
@@ -332,7 +327,7 @@ const PlayPage = () => {
           <div>
             <p>
               No map available. Please generate and save a map first in the{" "}
-              <NavLink to="/" className="capitalize text-purple-400">
+              <NavLink to="/" className="capitalize text-orange-400">
                 home page
               </NavLink>
             </p>
@@ -340,7 +335,7 @@ const PlayPage = () => {
               <p>Or, load the data game from a Json file</p>
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="bg-pink-400 p-4 rounded-xl uppercase text-white"
+                className="button"
               >
                 load
               </button>
