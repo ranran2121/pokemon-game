@@ -286,17 +286,19 @@ const PlayPage = () => {
 
               <div className="my-2">
                 {pokemonData?.name ? (
-                  <h2>
+                  <p>
                     Play with{" "}
                     <span className="uppercase text-orange-500 font-bold ">
                       {pokemonData.name}
+                      <img
+                        src={pokemonData.sprites.front_default}
+                        alt={pokemonData?.name}
+                        className="w-14 inline"
+                      />
                     </span>
-                  </h2>
+                  </p>
                 ) : (
-                  <button
-                    onClick={fetchPokemon}
-                    className="bg-pink-400 p-4 rounded-xl uppercase text-white"
-                  >
+                  <button onClick={fetchPokemon} className="button">
                     Play
                   </button>
                 )}
@@ -305,7 +307,7 @@ const PlayPage = () => {
                 pokemonData={pokemonData}
                 localMap={localMap}
                 pokemonPosition={pokemonPosition}
-                size="30px"
+                size={`${localMap.length === 10 ? "30px" : "20px"}`}
               />
             </div>
 

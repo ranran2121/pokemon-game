@@ -4,6 +4,7 @@ import {
   placeContiguousArea,
   recheckMapForIsolatedLandCells,
 } from "../lib/mapGeneration";
+import { NavLink } from "react-router-dom";
 
 const Home = () => {
   const [map, setMap] = useState<string[][] | null>(null);
@@ -103,6 +104,19 @@ const Home = () => {
 
   return (
     <div className="text-center">
+      <div className="my-5">
+        <p className="">
+          You can set the size and percentages of grass and sea cells below ...
+        </p>
+        <p className="">
+          Or You can navigate directly to the{" "}
+          <NavLink to="/play" className="capitalize text-orange-400">
+            Play page
+          </NavLink>{" "}
+          and load a locally saved game
+        </p>
+      </div>
+
       <div className="my-5">
         <div className="setting">
           <label htmlFor="dimension-select">Select map's size: </label>

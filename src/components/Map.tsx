@@ -48,7 +48,7 @@ const Map = ({
                 ? "blue"
                 : cell === "grass"
                 ? "green"
-                : "rgb(217 119 6)",
+                : "rgb(245 158 11)",
               border: "1px solid white",
               borderRadius: "5px",
               position: "relative",
