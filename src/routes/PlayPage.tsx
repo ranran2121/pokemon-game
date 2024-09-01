@@ -105,6 +105,34 @@ const PlayPage = () => {
     }
   };
 
+  const fetchPokemon = async () => {
+    if (localMap) {
+      try {
+        setError("");
+
+        const pokemonResponse = await fetchRandomPokemon();
+
+        // Set Pokémon position to the center of the map
+        const centerRow = Math.floor(localMap.length / 2);
+        const centerCol = Math.floor(localMap[0].length / 2);
+
+        setPokemonPosition({ row: centerRow, col: centerCol });
+        localStorage.setItem(
+          "pokemonPosition",
+          JSON.stringify({ row: centerRow, col: centerCol })
+        );
+
+        setPokemonData(pokemonResponse.data);
+        localStorage.setItem(
+          "generatedPokemon",
+          JSON.stringify(pokemonResponse.data)
+        );
+      } catch (err) {
+        setError("Failed to fetch Pokémon");
+      }
+    }
+  };
+
   useEffect(() => {
     const storedPokemon = localStorage.getItem("generatedPokemon");
     if (storedPokemon) {
@@ -137,34 +165,6 @@ const PlayPage = () => {
     }
   }, []);
 
-  const fetchPokemon = async () => {
-    if (localMap) {
-      try {
-        setError("");
-
-        const pokemonResponse = await fetchRandomPokemon();
-
-        // Set Pokémon position to the center of the map
-        const centerRow = Math.floor(localMap.length / 2);
-        const centerCol = Math.floor(localMap[0].length / 2);
-
-        setPokemonPosition({ row: centerRow, col: centerCol });
-        localStorage.setItem(
-          "pokemonPosition",
-          JSON.stringify({ row: centerRow, col: centerCol })
-        );
-
-        setPokemonData(pokemonResponse.data);
-        localStorage.setItem(
-          "generatedPokemon",
-          JSON.stringify(pokemonResponse.data)
-        );
-      } catch (err) {
-        setError("Failed to fetch Pokémon");
-      }
-    }
-  };
-
   useEffect(() => {
     // Handle keyboard input for Pokémon movement
     const handleKeyDown = async (event: any) => {
@@ -186,19 +186,19 @@ const PlayPage = () => {
         switch (event.key) {
           case "ArrowUp":
             newRow = Math.max(0, row - 1);
-            move = "up";
+            move = row - 1 > 0 ? "up" : " invalid move";
             break;
           case "ArrowDown":
             newRow = Math.min(localMap.length - 1, row + 1);
-            move = "down";
+            move = row + 1 < localMap.length ? "down" : " invalid move";
             break;
           case "ArrowLeft":
             newCol = Math.max(0, col - 1);
-            move = "left";
+            move = col - 1 > 0 ? "left" : " invalid move";
             break;
           case "ArrowRight":
             newCol = Math.min(localMap[0].length - 1, col + 1);
-            move = "right";
+            move = col + 1 < localMap[0].length ? "right" : "invalid move";
             break;
           default:
             return;
@@ -206,7 +206,7 @@ const PlayPage = () => {
 
         // Check if the new position is a valid move
         if (localMap[newRow][newCol] === "sea") {
-          setLog((prev: string[]) => [...prev, "Invalid move"]);
+          setLog((prev: string[]) => [...prev, "You can't swim!"]);
         } else {
           //set new Pokemon's position
           setPokemonPosition({ row: newRow, col: newCol });
