@@ -28,11 +28,12 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 1. **Generate the map:**
 
-In the Home page the user can choose the dimensions of the grid (small, medium or large) and the percentage (10-30%) of the cells containing grass or sea. The user can then generate the map by clicking on the generate map button. When the user is happy with the map can hit the save map button to save the map in the local storage. This will produce an alert message that the game is now ready. The game will be available in the Play page
+On the Home page, users can select the grid size (small, medium, or large) and set the percentage (10-30%) of cells that will contain grass or sea. After selecting these options, users can generate a map by clicking the "Generate Map" button. Once satisfied with the map, they can save it to local storage by clicking the "Save Map" button, which will display an alert confirming the game is ready. The game can then be accessed on the Play page.
 
 2. **Find a pokemon:**
 
-In the Play page the map will be automatically loaded in the page. If a map is not available in the local storage, a message will ask the user to generate a new map. Then the user has to play the Play button which will assign a random pokemon that represents the user on the map and will be placed in the middle of the map
+On the Play page, the map will be automatically loaded from local storage. If no map is found, a message will prompt the user to either generate a new map or upload a JSON file with the game data. Once the map is displayed, clicking the "Play" button will assign a random Pokémon to represent the user on the map, placing it in the center.
 
-2. **Play the game:**
-   By clicking on the arrow keys, the user can move the pokemon inside the map. The pokemon cannot enter cells representing the sea (in blue) and when entering cells representing the grass (in green), the pokemon has 20% chances to catch another pokemon
+3. **Play the game:**
+
+Using the arrow keys, the user can move their Pokémon around the map. The Pokémon cannot move into sea cells (marked in blue) and has a 20% chance of catching another Pokémon when moving into grass cells (marked in green). At the bottom of the page, users can view a log of their moves and any Pokémon they have caught. At the top of the page, users have the option to save or reset the game.

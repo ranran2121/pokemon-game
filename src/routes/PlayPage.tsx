@@ -128,7 +128,7 @@ const PlayPage = () => {
           JSON.stringify(pokemonResponse.data)
         );
       } catch (err) {
-        setError("Failed to fetch Pokémon");
+        setError("Failed to fetch Pokémon, try later!");
       }
     }
   };
@@ -267,7 +267,9 @@ const PlayPage = () => {
 
   return (
     <div className="flex flex-col justify-center items-center mt-2">
-      {error && <div className="">{error}</div>}
+      {error && (
+        <div className="bg-orange-700 text-white p-4 rounded-sm">{error}</div>
+      )}
 
       <div className="h-screen overflow-hidden">
         {localMap ? (
