@@ -317,7 +317,9 @@ const PlayPage = () => {
                   isLog={false}
                 />
               </div>
-              <div className="border-double border-l-4 border-orange-500 ml-2"></div>
+
+              <div className="border-double border-l-4 border-orange-500 ml-2" />
+
               <div className="basis-1/2 pl-2">
                 <List list={log} title={"Log"} isLog={true} />
               </div>
