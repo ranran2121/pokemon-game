@@ -13,6 +13,12 @@ const Home = () => {
   const [grass, setGrass] = useState(10);
   const [hasStoredMap, setHasStoredMap] = useState(false);
 
+  const options = [
+    { value: "small", label: "Small", width: 10, height: 10 },
+    { value: "medium", label: "Medium", width: 25, height: 20 },
+    { value: "large", label: "Large", width: 40, height: 25 },
+  ];
+
   useEffect(() => {
     const storedMap = localStorage.getItem("generatedMap");
     if (storedMap) {
@@ -37,16 +43,16 @@ const Home = () => {
     let width: number, height: number;
     switch (dimensions) {
       case "small":
-        width = 10;
-        height = 10;
+        width = options[0].width;
+        height = options[0].height;
         break;
       case "medium":
-        width = 25;
-        height = 20;
+        width = options[1].width;
+        height = options[1].height;
         break;
       case "large":
-        width = 40;
-        height = 25;
+        width = options[2].width;
+        height = options[2].height;
         break;
       default:
         width = 10;
@@ -128,9 +134,13 @@ const Home = () => {
               setDimensions(event.target.value);
             }}
           >
-            <option value="small">Small</option>
-            <option value="medium">Medium</option>
-            <option value="large">Large</option>
+            {options.map(({ value, label, width, height }) => {
+              return (
+                <option value={value} key={value}>
+                  {label} ({width}x{height}){" "}
+                </option>
+              );
+            })}
           </select>
         </div>
 
@@ -190,7 +200,7 @@ const Home = () => {
         </button>
 
         {hasStoredMap && (
-          <div className="my-4 px-3 bg-amber-300 text-orange-500">
+          <div className="my-4 px-3 bg-amber-300 text-orange-500 w-fit mx-auto">
             A map is already stored. Saving a new map will reset the previous
             game
           </div>

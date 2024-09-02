@@ -266,12 +266,7 @@ const PlayPage = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [pokemonPosition, pokemonData, localMap, log, capturedPokemons]);
 
-  const height =
-    localMap?.length === 10
-      ? "250px"
-      : localMap?.length === 20
-      ? "200px"
-      : "100px";
+  const height = localMap?.length === 10 ? "250px" : "200px";
 
   return (
     <div className="flex flex-col justify-center items-center mt-2">
@@ -294,7 +289,7 @@ const PlayPage = () => {
                 </div>
               )}
 
-              <div className="my-2">
+              <div className="my-1">
                 {pokemonData?.name ? (
                   <p>
                     Play with{" "}
