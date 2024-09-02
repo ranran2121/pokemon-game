@@ -4,6 +4,9 @@ import { fetchRandomPokemon } from "../lib/fetchRandomPokemon";
 import Map from "../components/Map";
 import List from "../components/List";
 
+const invalidMove = "invalid move";
+const cantSwim = "You can't swim!";
+
 const PlayPage = () => {
   const [localMap, setLocalMap] = useState<string[][] | null>(null);
   const [pokemonData, setPokemonData] = useState<any | null>(null);
@@ -187,19 +190,19 @@ const PlayPage = () => {
         switch (event.key) {
           case "ArrowUp":
             newRow = Math.max(0, row - 1);
-            move = row - 1 > 0 ? "up" : " invalid move";
+            move = row - 1 > 0 ? "up" : invalidMove;
             break;
           case "ArrowDown":
             newRow = Math.min(localMap.length - 1, row + 1);
-            move = row + 1 < localMap.length ? "down" : " invalid move";
+            move = row + 1 < localMap.length ? "down" : invalidMove;
             break;
           case "ArrowLeft":
             newCol = Math.max(0, col - 1);
-            move = col - 1 > 0 ? "left" : " invalid move";
+            move = col - 1 > 0 ? "left" : invalidMove;
             break;
           case "ArrowRight":
             newCol = Math.min(localMap[0].length - 1, col + 1);
-            move = col + 1 < localMap[0].length ? "right" : "invalid move";
+            move = col + 1 < localMap[0].length ? "right" : invalidMove;
             break;
           default:
             return;
@@ -207,7 +210,7 @@ const PlayPage = () => {
 
         // Check if the new position is a valid move
         if (localMap[newRow][newCol] === "sea") {
-          setLog((prev: string[]) => [...prev, "You can't swim!"]);
+          setLog((prev: string[]) => [...prev, cantSwim]);
         } else {
           //set new Pokemon's position
           setPokemonPosition({ row: newRow, col: newCol });
@@ -224,7 +227,11 @@ const PlayPage = () => {
           // Check if the new position is grass
           if (localMap[newRow][newCol] === "grass") {
             // 20% chance to find a Pokémon
-            if (Math.random() < 0.2) {
+            if (
+              Math.random() < 0.2 &&
+              move !== invalidMove &&
+              move !== cantSwim
+            ) {
               const pokemonResponse = await fetchRandomPokemon();
 
               // Add the captured Pokémon to the list
