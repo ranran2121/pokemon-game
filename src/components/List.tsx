@@ -4,10 +4,12 @@ const List = ({
   list,
   title,
   isLog,
+  height,
 }: {
   list: any[];
   title: string;
   isLog: boolean;
+  height: string;
 }) => {
   const listRef = useRef<HTMLUListElement>(null);
 
@@ -19,7 +21,9 @@ const List = ({
   }, [list]);
 
   return (
-    <div className="h-full flex flex-col bg-amber-100 pl-2 pt-2 rounded-md">
+    <div
+      className={`h-[${height}] flex flex-col bg-amber-100 pl-2 py-2 rounded-md`}
+    >
       <h3 className="uppercase font-bold underline underline-offset-4 text-orange-500">
         {title}:
       </h3>

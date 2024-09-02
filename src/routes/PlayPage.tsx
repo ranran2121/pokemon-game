@@ -14,6 +14,7 @@ const PlayPage = () => {
     row: number;
     col: number;
   } | null>(null);
+
   const fileInputRef = useRef<any>(null);
 
   const reset = () => {
@@ -265,6 +266,13 @@ const PlayPage = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [pokemonPosition, pokemonData, localMap, log, capturedPokemons]);
 
+  const height =
+    localMap?.length === 10
+      ? "250px"
+      : localMap?.length === 20
+      ? "200px"
+      : "100px";
+
   return (
     <div className="flex flex-col justify-center items-center mt-2">
       {error && (
@@ -313,19 +321,22 @@ const PlayPage = () => {
               />
             </div>
 
-            <div className="mt-3 flex justify-between w-screen h-1/2">
-              <div className="basis-1/2 pl-2">
+            <div className={`p-3 flex justify-between w-screen ${height}`}>
+              <div className="basis-1/2">
                 <List
                   list={capturedPokemons}
                   title={"Captured Pokémon"}
                   isLog={false}
+                  height={height}
                 />
               </div>
 
-              <div className="border-double border-l-4 border-orange-500 ml-2" />
+              <div
+                className={`border-double border-l-4 border-orange-500 ml-2 h-[${height}]`}
+              />
 
               <div className="basis-1/2 pl-2">
-                <List list={log} title={"Log"} isLog={true} />
+                <List list={log} title={"Log"} isLog={true} height={height} />
               </div>
             </div>
           </>
