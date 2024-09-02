@@ -330,18 +330,20 @@ const PlayPage = () => {
             </div>
           </>
         ) : (
-          <div>
-            <p>
-              No map available. Please generate and save a map first in the{" "}
+          <div className="my-16 text-center">
+            <p className="py-5"> No map available.</p>
+            <p className="py-5">
+              Please generate and save a map first on the{" "}
               <NavLink to="/" className="capitalize text-orange-400">
-                home page
+                Home page
               </NavLink>
             </p>
-            <div className="flex items-center gap-2 mt-2">
-              <p>Or, load the data game from a Json file</p>
+
+            <p className="py-5">
+              Or load the data game from a Json file
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="button"
+                className="button ml-2"
               >
                 load
               </button>
@@ -350,9 +352,9 @@ const PlayPage = () => {
                 accept="application/json"
                 ref={fileInputRef}
                 onChange={load}
-                style={{ display: "none" }}
+                className="hidden"
               />
-            </div>
+            </p>
           </div>
         )}
       </div>
